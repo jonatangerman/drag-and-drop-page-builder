@@ -1,5 +1,6 @@
 <template>
-  <div id="main-container" class="min-h-screen flex w-full">
+  <h1 class="title text-center pt-[10px] !text-[30px] uppercase">Simple Drag & Drop Landing Page Builder</h1>
+  <div id="main-container" class="flex w-full">
     <div id="blocks-container"
       class="flex max-w-[350px] w-full shadow-lg gap-5 flex-col p-[20px] pt-[50px]">
 
@@ -28,8 +29,6 @@
       >
         Drag blocks here to start building
       </div>
-
-      {{  builderBlocks }}
     </div>
 
   </div>
@@ -82,6 +81,10 @@
 
 <style lang="scss" scoped>
 
+  #main-container {
+    height: calc(100% - var(--title-height));
+  }
+
   h1 {
     color: var(--color-black);
     font-size: 20px;
@@ -89,6 +92,12 @@
     width: 100%;
     padding-bottom: 20px;
     border-bottom: 2px solid var(--color-accent)
+  }
+
+  h1.title {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    height: var(--title-height);
   }
 
   #builder-container {

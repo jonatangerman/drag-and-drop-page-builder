@@ -1,6 +1,13 @@
 @use 'font-awesome/css/font-awesome.min.css';
 @use './variables';
+@use './fonts';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#app, html, body {
+  height: 100%;
+  font-family: 'Funnel Display';
+
+}
