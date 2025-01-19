@@ -41,12 +41,15 @@
         ></div>
 
         <BuilderBlock 
-          class="p-4 bg-white shadow rounded mb-4 flex items-center justify-between builder-block"
           :blockId="block.id"
           :type="block.type"
           :index="index"
           :content="block.content"
           :isActive="selectedId == block.id"
+          :class="{ 'is-active':selectedId == block.id }"
+          @activate="setActive"
+          @inactivate="setInactive"
+          @input="changeContent"
         />
       </div>
     </div>
@@ -54,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-  import type { DraggableTypes } from '@/typescript/index.ts';
+  import type { DraggableTypes, BuilderBlockParams } from '@/typescript/index.ts';
   import ElementBlock from '@/components/ElementBlock.vue'
   import BuilderBlock from '@/components/BuilderBlock.vue'
   import { ref } from 'vue';
@@ -100,6 +103,20 @@
   draggedBlockType.value = null;
 };
 
+const setActive = (params: BuilderBlockParams) => {
+  console.log("CLICKED ", params.blockId);
+  selectedId.value = params.blockId;
+}
+
+const changeContent = (params: BuilderBlockParams) => {
+  builderBlocks.value[params.index].content = params.content;
+}
+
+const setInactive = () => {
+  console.log('setInactive!! ')
+  selectedId.value = '';
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -114,7 +131,7 @@
     font-weight: bold;
     width: 100%;
     padding-bottom: 20px;
-    border-bottom: 2px solid var(--color-accent)
+    border-bottom: 2px solid var(--color-accent);
   }
 
   h1.title {
