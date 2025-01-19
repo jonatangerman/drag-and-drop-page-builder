@@ -12,11 +12,11 @@ interface TextBuilder {
   isActive: boolean;
 }
 
-defineProps<TextBuilder>();
+const props = defineProps<TextBuilder>();
 
 const textarea = ref(null);
 
-const defaultValue = "Insert the text you want!";
+const defaultValue = props.content || "Add custom text";
 const value = ref<string>(defaultValue);
 
 const handleInput = () => {
@@ -37,12 +37,19 @@ const emit = defineEmits(['input', 'activate'])
 
 <style scoped lang="scss">
   textarea {
+    padding: 0px;
+    background-color: transparent;
     resize: none;
     min-height: 50px;
-    font-size: 30px;
-    padding: 0px 20px;
-    &:focus {
-      outline: 2px solid var(--color-accent);
+    line-height: 25px;
+    font-size: 25px;
+    &:focus, &:hover {
+      outline: 1px solid var(--color-primary);
     }
+  }
+
+  .is-active textarea {
+    padding-left: 10px;
+    outline: 1px solid var(--color-primary);
   }
 </style>

@@ -55,7 +55,7 @@ const onDragStart = () => {
 
 <style scoped lang="scss">
   div {
-    color: var(--color-white);
-    background-color: var(--color-black);
+    color: white;
+    background-color: var(--color-primary);
   }
 </style>
