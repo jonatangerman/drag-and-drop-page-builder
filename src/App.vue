@@ -7,7 +7,7 @@
       <h1>Draggable Elements</h1>
 
       <div id="blocks" class="w-full h-[100px] flex flex-wrap justify-center items-center gap-5">
-        <DraggableBlock v-for="type in elementsType"
+        <ElementBlock v-for="type in elementsType"
           :type="type"
           @dragstart="onDragStartBlock"
           @click="onClickBlock"
@@ -29,14 +29,34 @@
       >
         Drag blocks here to start building
       </div>
-    </div>
 
+      <div
+        v-for="(block, index) in builderBlocks"
+        :key="block.id"
+        class="relative"
+      >
+        <div
+          v-if="placeholderIndex === index"
+          class="h-16 bg-blue-200 rounded mb-4 builder-placeholder"
+        ></div>
+
+        <BuilderBlock 
+          class="p-4 bg-white shadow rounded mb-4 flex items-center justify-between builder-block"
+          :blockId="block.id"
+          :type="block.type"
+          :index="index"
+          :content="block.content"
+          :isActive="selectedId == block.id"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import type { DraggableTypes } from '@/typescript/index.ts';
-  import DraggableBlock from '@/components/DraggableBlock.vue'
+  import ElementBlock from '@/components/ElementBlock.vue'
+  import BuilderBlock from '@/components/BuilderBlock.vue'
   import { ref } from 'vue';
 
   const elementsType: DraggableTypes[] = ['text', 'image'];
@@ -47,9 +67,11 @@
   interface Block {
     id: string;
     type: DraggableTypes;
+    content: string;
   }
 
   const builderBlocks = ref<Block[]>([]);
+  const selectedId = ref<string>('');
 
   const onClickBlock = (type: DraggableTypes) => {
     onDragStartBlock(type);
@@ -66,7 +88,8 @@
   if (draggedBlockType.value) {
     const newBlock = {
       id: crypto.randomUUID(),
-      type: draggedBlockType.value
+      type: draggedBlockType.value,
+      content: '',
     };
 
     builderBlocks.value.splice(
