@@ -1,17 +1,18 @@
 <template>
-  <h1 class="title text-center pt-[10px] !text-[30px] uppercase"><i class="fa fa-object-group mr-[20px]"></i>Simple Drag & Drop Landing Page Builder</h1>
+  <h1 class="flex pr-[10px] pl-[10px] justify-center items-center text-center title pt-[10px] !text-[30px] uppercase max-md:!text-[21px]  max-sm:!text-[17px]"><i class="fa fa-object-group mr-[20px]"></i>Simple Drag & Drop Landing Page Builder</h1>
   <div id="main-container" class="flex w-full">
     <div id="blocks-container"
-      class="flex max-w-[350px] w-full shadow-lg gap-5 flex-col p-[20px] pt-[50px]">
+      class="flex max-w-[350px] w-full shadow-lg gap-5 flex-col p-[20px] pt-[50px] max-md:w-[100px] max-lg:w-[200px]">
+      <div class="sticky top-[0px] left-[0px]">
+        <h1 class="max-md:hidden max-lg:!text-[22px] max-lg:!mb-[20px]">Builder Blocks</h1>
 
-      <h1>Builder Blocks</h1>
-
-      <div id="blocks" class="w-full h-[100px] flex flex-wrap justify-center items-center gap-5">
-        <ElementBlock v-for="type in elementsType"
-          :type="type"
-          @dragstart="onDragStartBlock"
-          @click="onClickBlock"
-        />
+        <div id="blocks" class="w-full h-[100px] flex flex-wrap justify-center items-center gap-5">
+          <ElementBlock v-for="type in elementsType"
+            :type="type"
+            @dragstart="onDragStartBlock"
+            @click="onClickBlock"
+          />
+        </div>
       </div>
     </div>
 
@@ -22,38 +23,36 @@
       @drop="onDropBlock"
     >
 
-      <h1 class="mb-[40px]">Builder Area</h1>
+      <h1 class="mb-[40px] max-md:!text-[20px] max-lg:!text-[22px]">Builder Area</h1>
       <div
         v-if="builderBlocks.length === 0"
-        class="flex items-center justify-center empty-builder text-center py-20 border-dashed border-2 text-[20px] mt-auto mb-auto h-[90%]"
+        class="max-md:!text-[15px] w-full xl:max-w-[60%] mr-auto ml-auto flex items-center justify-center empty-builder text-center py-20 border-dashed border-2 text-[20px] mt-auto mb-auto h-[90%]"
       >
         Drop Or Click Blocks To Add Here
       </div>
-
-      <div
+      <BuilderBlock
         v-for="(block, index) in builderBlocks"
         :key="block.id"
-        class="relative"
-      >
-        <div
-          v-if="placeholderIndex === index"
-          class="h-16 bg-blue-200 rounded mb-4 builder-placeholder"
-        ></div>
+        :blockId="block.id"
+        :type="block.type"
+        :index="index"
+        :content="block.content"
+        :isActive="selectedId == block.id"
+        :class="{ 'is-active':selectedId == block.id, 'opacity-50 dragging': draggedIndex === index, 'add-above':placeholderIndex === index && draggedIndex !== null && index < draggedIndex, 'add-below':placeholderIndex === index && draggedIndex !== null && index > draggedIndex }"
+        @activate="setActive"
+        @inactivate="setInactive"
+        @input="changeContent"
+        @duplicate="handleDuplication"
+        @delete="handleDelete"
+        @dragstart="onDragStartBuilder(index)"
+        @dragover="onDragOver(index)"
+        @drop="onDropBuilder(index)"
+      />
+    </div>
 
-        <BuilderBlock 
-          :blockId="block.id"
-          :type="block.type"
-          :index="index"
-          :content="block.content"
-          :isActive="selectedId == block.id"
-          :class="{ 'is-active':selectedId == block.id }"
-          @activate="setActive"
-          @inactivate="setInactive"
-          @input="changeContent"
-          @duplicate="handleDuplication"
-          @delete="handleDelete"
-        />
-      </div>
+    <div v-if="builderBlocks.length > 0" @click="handleSave" class="cursor-pointer fixed bottom-[50px] right-[50px] rounded save-btn p-[15px] z-[10]">
+      <i class="fa fa-download"></i>
+      Save to JSON
     </div>
   </div>
 </template>
@@ -100,9 +99,8 @@
     builderBlocks.value.splice(
       builderBlocks.value.length,0, newBlock
     );
+    draggedBlockType.value = null;
   }
-
-  draggedBlockType.value = null;
 };
 
 const setActive = (params: BuilderBlockParams) => {
@@ -124,6 +122,38 @@ const handleDuplication = (params: BuilderBlockParams) => {
 
 const handleDelete = (params: BuilderBlockParams) => {
   builderBlocks.value.splice(params.index, 1);
+}
+
+const onDragStartBuilder = (index: number) => {
+  draggedIndex.value = index;
+  draggedBlockType.value = null;
+  placeholderIndex.value = null;
+};
+
+const onDragOver = (index: number) => {
+  if (draggedIndex.value == null) return;
+  if (placeholderIndex.value !== index) {
+    placeholderIndex.value = index;
+  }
+};
+
+const onDropBuilder = (index: number) => {
+  if (!draggedBlockType.value) {
+    if (draggedIndex.value !== null && draggedIndex.value !== index) {
+      const currentBlock = builderBlocks.value[draggedIndex.value];
+      builderBlocks.value.splice(draggedIndex.value, 1);
+      builderBlocks.value.splice(index, 0, currentBlock);
+    }
+
+    draggedIndex.value = null;
+    placeholderIndex.value = null;
+  }
+};
+
+const handleSave = () => {
+  const data = JSON.parse(JSON.stringify(builderBlocks.value));
+  console.log('The following is the JSON data for this landing Page:');
+  console.log(JSON.stringify({ data }));
 }
 
 </script>
@@ -149,6 +179,11 @@ const handleDelete = (params: BuilderBlockParams) => {
     height: var(--title-height);
   }
 
+  .save-btn {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+  }
+
   #builder-container {
     background-color: white;
 
@@ -162,5 +197,13 @@ const handleDelete = (params: BuilderBlockParams) => {
   #blocks-container {
     border-right: 1px solid var(--color-accent);
     background-color: var(--color-white);
+  }
+
+  .add-below {
+    box-shadow: 0 2px 0 0 red;
+  }
+
+  .add-above {
+    box-shadow: 0 -2px 0 0 red;
   }
 </style>
