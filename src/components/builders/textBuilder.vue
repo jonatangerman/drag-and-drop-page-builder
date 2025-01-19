@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex w-full">
-    <textarea ref="textarea" class="w-full" @input="handleInput" v-model="value" @focus="handleFocus"  type="text" />
+    <textarea ref="textarea" class="w-full max-md:!text-[18px] max-md:!leading-[22px]" @input="handleInput" v-model="value" @focus="handleFocus"  type="text" />
   </div>
 </template>
 

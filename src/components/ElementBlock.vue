@@ -5,7 +5,7 @@
     @dragstart="onDragStart"
     @click="handleClick"
   >
-    <i :class="icon"></i> {{ text }}
+    <i :class="icon"></i> <span class="max-md:hidden">{{ text }}</span>
   </div>
 </template>
 
@@ -42,7 +42,6 @@ const init = () => {
 const emit = defineEmits(['dragstart', 'click'])
 
 const handleClick = () => {
-  console.log('handleClick!! ');
   emit('click', props.type);
 }
 

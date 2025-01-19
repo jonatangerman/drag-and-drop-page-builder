@@ -1,19 +1,19 @@
 <template>
   <div
-    class="relative bg-transparent flex builder-block ml-auto mr-auto"
-    :class="`${type}-builder`"
+    class="relative bg-transparent flex builder-block ml-auto mr-auto xl:max-w-[60%]"
+    :class="[`${type}-builder`, {'max-md:mb-[40px]': isActive}]"
     @click="emitEvent('activate')"
     @duplicate="emitEvent('duplicate')"
     @delete="emitEvent('delete')"
+    :draggable="false"
+    @dragover="emitEvent('dragover')"
+    @drop="emitEvent('drop')"
   >
     <div v-show="isActive"
       class="z-[9] drag-handler h-[52px] w-[40px] bottom-auto left-[-39px] absolute flex items-center justify-center rounded-tl-[4px] rounded-bl-[4px]"
       draggable="true"
       @click.stop
       @dragstart="emitEvent('dragstart')"
-      @dragover.prevent="emitEvent('dragover')"
-      @drop="emitEvent('drop')"
-      @dragend="emitEvent('dragend')"
     >
       <i class="fa fa-bars"></i>
     </div>
@@ -27,20 +27,20 @@
     <component class="z-[9]" :isActive="isActive" @input="changeContent" :content="content" :is="builderCommp" @activate="emitEvent('activate')" />
 
     <div v-show="isActive"
-      class="action-container absolute top-auto bottom-auto right-[-39px] z-[9] rounded-br-[4px] rounded-tr-[4px]"
+      class="action-container absolute right-[-39px] z-[9] rounded-br-[4px] rounded-tr-[4px] max-md:rounded-tr-[0px] max-md:rounded-bl-[4px] max-md:bottom-[-35px] max-md:right-[0px] max-md:!w-full max-md:!top-auto max-md:flex"
     >
-      <div @click.stop="emitEvent('duplicate')" class="duplicate-btn">
+      <div @click.stop="emitEvent('duplicate')" class="max-md:!h-[34px] duplicate-btn max-md:!flex-1">
         <i class="fa fa-clone"></i>
       </div>
-      <div @click.stop="emitEvent('delete')" class="delete-btn ">
+      <div @click.stop="emitEvent('delete')" class="max-md:!h-[34px] delete-btn max-md:!flex-1">
         <i class="fa fa-trash"></i>
       </div>
     </div>
 
-    <div v-show="isImageSelectorVisible" class="rounded flex w-full flex-col image-selector-modal z-[20] absolute bottom-[0px] left-[0px] p-[10px]">
+    <div v-show="isImageSelectorVisible" class="rounded flex w-full flex-col image-selector-modal z-[20] absolute bottom-[0px] left-[0px] p-[10px] max-lg:fixed max-lg:bottom-auto max-lg:top-auto max-sm:top-[0px] overflow-scroll max-sm:!max-h-[100%]">
       <h2 class="mb-[10px]">Choose Block Image</h2>
       <div class="images-container justify-center w-full flex flex-wrap gap-[2px]">
-        <img :class="{'selected': currentContent == img }" @click.stop="setCurrentContent(img)" class="cursor-pointer flex-none" v-for="(img, index) in presetImages" :src="img" :alt="`image-${index}`">
+        <img :class="{'selected': currentContent == img }" @click.stop="setCurrentContent(img)" class="cursor-pointer flex-none max-sm:!w-full" v-for="(img, index) in presetImages" :src="img" :alt="`image-${index}`">
       </div>
       <div class="modal-actions w-full flex gap-[10px] justify-end">
         <div @click.stop="closeImageSelector" class="cursor-pointer p-3">Close</div>
@@ -87,9 +87,9 @@ const showExtraActions = computed(() => {
   return props.type == 'image' && props.isActive;
 });
 
-type events = 'dragstart' | 'drop' |'dragend' | 'dragover' | 'input' | 'activate' | 'duplicate' | 'delete' | 'inactivate';
+type events = 'dragstart' | 'drop' | 'dragover' | 'input' | 'activate' | 'duplicate' | 'delete' | 'inactivate';
 
-const emit = defineEmits(['dragstart', 'drop', 'dragend', 'dragover', 'input', 'activate', 'duplicate', 'delete', 'inactivate'])
+const emit = defineEmits(['dragstart', 'drop', 'dragover', 'input', 'activate', 'duplicate', 'delete', 'inactivate'])
 
 const emitEvent = (event: events) => {
   emit(event, { blockId: props.blockId, index: props.index, content: props.content } as BuilderBlockParams);
